@@ -1,0 +1,23 @@
+services:
+  rag-basics-db:
+    image: pgvector/pgvector:pg17
+    container_name: rag-basics-db
+    restart: unless-stopped
+    ports:
+      - "5436:5432"   # host:container — 5436 chosen to avoid clashing with other local Postgres containers
+    environment:
+      POSTGRES_USER: rag_basics
+      POSTGRES_PASSWORD: rag_basics
+      POSTGRES_DB: rag_basics
+    volumes:
+      - rag-basics-db-data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rag_basics -d rag_basics"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  rag-basics-db-data:
+    name: rag-basics-db-data
