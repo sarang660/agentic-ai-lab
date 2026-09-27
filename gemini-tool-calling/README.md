@@ -28,9 +28,8 @@ GEMINI_API_KEY=your-key-here
 ## Run it
 
 ```bash
-npx tsx src/index.ts
-# or
-npx tsx src/weather-tool.ts
+npm start          # calculator tool
+npm run start:weather   # weather tool
 ```
 
 Type a question, or `exit` to quit. The console prints what Gemini requested (`Gemini requested: { functionCall }`) and the tool result.

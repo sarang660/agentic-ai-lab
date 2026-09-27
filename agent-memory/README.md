@@ -26,7 +26,7 @@ GEMINI_API_KEY=your-key-here
 ## Run it
 
 ```bash
-npx tsx src/index.ts
+npm start
 ```
 
 Flow: `Would you like to save memories?` → enter key/value pairs → prints current memory → `Enter your question about the memory:` → Gemini responds using `memory.json` as context.
