@@ -13,15 +13,11 @@ const DOCUMENT_PATH = "./documents/company-policy.txt";
 // 1. Split document into chunks
 // --------------------------------------------------
 
-function chunkText(text: string, chunkSize: number): string[] {
-  const words = text.split(/\s+/);
-  const chunks: string[] = [];
-
-  for (let i = 0; i < words.length; i += chunkSize) {
-    chunks.push(words.slice(i, i + chunkSize).join(" "));
-  }
-
-  return chunks;
+function chunkText(text: string): string[] {
+  return text
+    .split(/\n\s*\n/) // split on blank lines — each policy statement is its own paragraph
+    .map((paragraph) => paragraph.replace(/\s+/g, " ").trim())
+    .filter((paragraph) => paragraph.length > 0);
 }
 
 // --------------------------------------------------
@@ -95,7 +91,7 @@ async function main() {
   // Create chunks
   // ------------------------------------------------
 
-  const chunks = chunkText(document, 20);
+  const chunks = chunkText(document);
 
   console.log(`Created ${chunks.length} chunks`);
 
@@ -157,20 +153,25 @@ async function main() {
   });
 
   // ------------------------------------------------
-  // Get the most relevant chunk
+  // Get the most relevant chunks
   // ------------------------------------------------
 
-  const bestMatch = results[0];
+  const topChunks = results.slice(0, 3);
 
   console.log("=================================");
-  console.log("Most relevant chunk:");
-  console.log(bestMatch.content);
-  console.log(`Similarity: ${(1 - bestMatch.distance).toFixed(4)}`);
+  console.log("Top chunks used as context:");
+  topChunks.forEach((chunk) =>
+    console.log(`- (${(1 - chunk.distance).toFixed(4)}) ${chunk.content}`)
+  );
   console.log("=================================");
 
   // ------------------------------------------------
   // Generate final answer using retrieved context
   // ------------------------------------------------
+
+  const context = topChunks
+    .map((chunk, index) => `[${index + 1}] ${chunk.content}`)
+    .join("\n");
 
   const prompt = `
 You are a helpful assistant answering questions about company policy.
@@ -178,7 +179,7 @@ You are a helpful assistant answering questions about company policy.
 Use the context below to answer the user's question.
 
 Context:
-${bestMatch.content}
+${context}
 
 Question:
 ${query_}
